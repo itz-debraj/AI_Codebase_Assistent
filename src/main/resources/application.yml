@@ -1,0 +1,114 @@
+spring:
+  application:
+    name: ai_coding_assistent
+
+  # ==================== Database ====================
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/devpilot}
+    username: ${DATABASE_USERNAME:devpilot}
+    password: ${DATABASE_PASSWORD:devpilot}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  # ==================== File Upload ====================
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 55MB
+
+  # ==================== Spring AI ====================
+  ai:
+    model:
+      chat: google-genai
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY:your-gemini-api-key-here}
+        chat:
+          api-key: ${GEMINI_API_KEY:your-gemini-api-key-here}
+          options:
+            model: gemini-3.8-flash
+            temperature: 0.3
+        embedding:
+          api-key: ${GEMINI_API_KEY:your-gemini-api-key-here}
+          options:
+            model: gemini-embedding-001
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: hnsw
+        distance-type: cosine_distance
+        dimensions: 768
+
+# ==================== Server ====================
+server:
+  port: ${SERVER_PORT:8080}
+
+# ==================== Application Config ====================
+app:
+  # Repository storage
+  storage:
+    upload-dir: ${UPLOAD_DIR:./uploads}
+    temp-dir: ${TEMP_DIR:./temp}
+    max-file-size-mb: 50
+
+  # Code indexing
+  indexing:
+    supported-extensions:
+      - .java
+      - .js
+      - .jsx
+      - .ts
+      - .tsx
+      - .py
+      - .go
+      - .kt
+      - .xml
+      - .yml
+      - .yaml
+      - .json
+      - .properties
+      - .md
+      - .sql
+    ignored-directories:
+      - target
+      - build
+      - node_modules
+      - .git
+      - dist
+      - out
+      - coverage
+      - .idea
+      - .vscode
+      - __pycache__
+      - .gradle
+    ignored-files:
+      - package-lock.json
+      - yarn.lock
+      - pnpm-lock.yaml
+      - .DS_Store
+    max-file-size-kb: 500
+
+  # Chunking
+  chunking:
+    max-chunk-size: 2000
+    overlap-size: 200
+
+  # RAG
+  rag:
+    top-k: ${RAG_TOP_K:8}
+    similarity-threshold: ${RAG_SIMILARITY_THRESHOLD:0.1}
+
+# ==================== Logging ====================
+logging:
+  level:
+    com.example.ai_coding_assistent: DEBUG
+    org.springframework.ai: INFO
+    org.hibernate.SQL: WARN
